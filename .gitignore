@@ -3,3 +3,4 @@ bin/
 *.cbp
 *.depend
 *.layout
+ftl_main.cpp
