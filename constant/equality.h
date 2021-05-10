@@ -1,6 +1,7 @@
 #ifndef EQUALITY_H_INCLUDED
 #define EQUALITY_H_INCLUDED
 
+#include "boolean.h"
 
 namespace ftl{
 
@@ -25,6 +26,14 @@ namespace ftl{
     */
     template<typename T, typename S>
     struct lt : bool_constant<T::value<S::value>{};
+
+
+
+    template<typename T, typename S>
+    using eq_t = typename eq<T,S>::type;
+
+    template<typename T, typename S>
+    static constexpr bool eq_v = eq<T,S>::value;
 
 
 }

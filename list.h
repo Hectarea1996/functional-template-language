@@ -3,6 +3,8 @@
 
 #include "cons.h"
 #include "null.h"
+#include "constant/numeric.h"
+#include "constant/equality.h"
 
 namespace ftl{
 
@@ -22,15 +24,15 @@ namespace ftl{
     * tantos elementos como se haya indicado. Para cada valor se ejecuta la
     * metafucnion que se le pasa como segundo parametro
     */
-    /// TODO: Arreglar usando un buen int_constant.
-//    template<typename I, typename N, template<std::size_t> typename F>
-//    struct build_list_aux : cons<typename F<I>::type,typename build_list_aux<index+1,n,F>::type>{};
-//
-//    template<typename N, template<typename> typename F>
-//    struct build_list_aux<N,N,F> : null{};
-//
-//    template<typename N, template<std::size_t> typename F>
-//    struct build_list : build_list_aux<std::integral_constant<std::size_t,0>,N,F>{};
+    /// TODO: Arreglar
+    template<bool stop, typename I, typename N, template<typename> typename F>
+    struct build_list_aux : cons<typename F<I>::type, typename build_list_aux<eq_v<add1_t<I>,N>,add1_t<I>,N,F>::type>{};
+
+    template<typename I, typename N, template<typename> typename F>
+    struct build_list_aux<true,I,N,F> : null{};
+
+    template<typename N, template<typename> typename F>
+    struct build_list : build_list_aux<eq_v<unsigned_long_long_int_constant<0>,N>,unsigned_long_long_int_constant<0>,N,F>{};
 
     /**
     * Comprueba si un tipo es list
@@ -43,6 +45,12 @@ namespace ftl{
 
     template<typename T1, typename T2>
     struct is_list<cons<T1,T2>> : is_list<T2>{};
+
+    template<typename T>
+    using is_list_t = typename is_list<T>::type;
+
+    template<typename T>
+    static constexpr bool is_list_v = is_list<T>::value;
 
     /**
     * Devuelve la longitud de una lista
@@ -120,17 +128,34 @@ namespace ftl{
         using type = typename map_aux<some_null<TS...>::value,F,TS...>::type;
     };
 
+    /**
+    * Aplana una lista
+    */
+    template<typename T>
+    struct flatten : cons<car_t<T>,typename flatten<cdr_t<T>>::type>{};
+
+    template<typename T, typename R, typename S>
+    struct flatten<cons<cons<T,R>,S>> : append<typename flatten<cons<T,R>>::type,typename flatten<S>::type>{};
+
+    template<typename S>
+    struct flatten<cons<null,S>> : flatten<S>{};
+
+    template<>
+    struct flatten<null> : null{};
+
+    template<typename T>
+    using flatten_t = typename flatten<T>::type;
+
 
     //---- shortcuts ----
 
     template<typename... TS>
     using list_t = typename list<TS...>::type;
 
-    template<typename T>
-    using is_list_t = typename is_list<T>::type;
+    template<typename N, template <typename> typename F>
+    using build_list_t = typename build_list<N,F>::type;
 
-    template<typename T>
-    static constexpr bool is_list_v = is_list<T>::value;
+
 
     template<typename T>
     using length_t = typename length<T>::type;
@@ -149,6 +174,8 @@ namespace ftl{
 
     template<template<typename...> typename F, typename... TS>
     using map_t = typename map<F,TS...>::type;
+
+
 
 }
 

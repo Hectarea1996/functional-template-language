@@ -35,6 +35,12 @@ namespace ftl{
     //---- methods ----
 
     /**
+    * Comprueba que un numero sea 0
+    */
+    template<typename N>
+    struct is_zero : bool_constant<N::value==0>{};
+
+    /**
     * Suma una cantidad variable de enteros
     */
     template<typename... NS>
@@ -88,13 +94,13 @@ namespace ftl{
     * Suma 1
     */
     template<typename N>
-    struct add1 : std::integral_constant<decltype(N::value++),N::value++>{};
+    struct add1 : std::integral_constant<decltype(N::value+1),N::value+1>{};
 
     /**
     * Resta 1
     */
     template<typename N>
-    struct sub1 : std::integral_constant<decltype(N::value--),N::value-->{};
+    struct sub1 : std::integral_constant<decltype(N::value-1),N::value-1>{};
 
     /**
     * Valor absoluto de un entero
@@ -157,6 +163,12 @@ namespace ftl{
 
     template<int n>
     static constexpr int int_constant_v = int_constant<n>::value;
+
+    template<typename N>
+    using is_zero_t = typename is_zero<N>::type;
+
+    template<typename N>
+    static constexpr bool is_zero_v = is_zero<N>::value;
 
     template<typename... NS>
     using plus_t = typename plus<NS...>::type;
