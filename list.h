@@ -18,6 +18,21 @@ namespace ftl{
     struct list<T,TS...> : cons<T,typename list<TS...>::type>{};
 
     /**
+    * Construye una lista numerica. Dado un valor positivo, se generan
+    * tantos elementos como se haya indicado. Para cada valor se ejecuta la
+    * metafucnion que se le pasa como segundo parametro
+    */
+    /// TODO: Arreglar usando un buen int_constant.
+//    template<typename I, typename N, template<std::size_t> typename F>
+//    struct build_list_aux : cons<typename F<I>::type,typename build_list_aux<index+1,n,F>::type>{};
+//
+//    template<typename N, template<typename> typename F>
+//    struct build_list_aux<N,N,F> : null{};
+//
+//    template<typename N, template<std::size_t> typename F>
+//    struct build_list : build_list_aux<std::integral_constant<std::size_t,0>,N,F>{};
+
+    /**
     * Comprueba si un tipo es list
     */
     template<typename T>
