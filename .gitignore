@@ -1,6 +1,6 @@
 obj/
 bin/
+*.ccp
 *.cbp
 *.depend
 *.layout
-ftl_main.cpp
