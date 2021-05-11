@@ -17,6 +17,9 @@ namespace ftl{
     template<int n>
     using int_constant = std::integral_constant<int,n>;
 
+    template<std::size_t n>
+    using size_constant = std::integral_constant<std::size_t,n>;
+
     template<unsigned int n>
     using unsigned_int_constant = std::integral_constant<unsigned int,n>;
 

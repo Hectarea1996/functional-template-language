@@ -1,7 +1,6 @@
 #ifndef RATIONAL_H_INCLUDED
 #define RATIONAL_H_INCLUDED
 
-#include "quasi_integral.h"
 
 namespace ftl{
 
@@ -19,7 +18,9 @@ namespace ftl{
     };
 
     template<int num, int den>
-    struct rational_constant : quasi_integral_constant<rational<int>>{
+    struct rational_constant{
+        using type = rational_constant<num,den>;
+        using value_type = rational<int>;
         static constexpr rational<int> value = {num,den};
         constexpr operator value_type() const noexcept { return value; }
         constexpr value_type operator()() const noexcept { return value; }

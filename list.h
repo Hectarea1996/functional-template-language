@@ -146,6 +146,12 @@ namespace ftl{
     template<typename T>
     using flatten_t = typename flatten<T>::type;
 
+    /**
+    * Devuelve una lista con todas las combinaciones posibles
+    */
+    template<typename T>
+    struct combine
+
 
     //---- shortcuts ----
 
