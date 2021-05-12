@@ -7,17 +7,12 @@ namespace ftl{
 
     //---- type ----
 
-    template<typename T, T... ts>
-    struct count : size_constant<0>{};
-
-    template<typename T, T t, T... ts>
-    struct count<T,t,ts...> : plus<size_constant<1>,typename count<T,ts...>::type>{};
-
-    template<typename T, T... ts>
+    // Necesita al menos un elemento para saber value_type
+    template<typename T, typename... TS>
     struct array_constant{
-        using type = array_constant<T,ts...>;
-        using value_type = const T(&)[count<T,ts...>::value];
-        static constexpr T value[] = {ts...};
+        using type = array_constant<T,TS...>;
+        using value_type = const typename T::value_type(&)[length_v<list_t<T,TS...>>];
+        static constexpr typename T::value_type value[] = {T::value,TS::value...};
         constexpr operator value_type() const noexcept { return value; }
         constexpr value_type operator()() const noexcept { return value; }
     };
@@ -30,8 +25,8 @@ namespace ftl{
     template<typename T>
     struct array_length{};
 
-    template<typename T, T... ts>
-    struct array_length<array_constant<T,ts...>> : size_constant<count<T,ts...>::value>{};
+    template<typename T, typename... TS>
+    struct array_length<array_constant<T,TS...>> : length<list_t<T,TS...>>{};
 
     template<typename T>
     using array_length_t = typename array_length<T>::type;
@@ -45,8 +40,8 @@ namespace ftl{
     template<typename A, typename B>
     struct array_append{};
 
-    template<typename T, T... as, T... bs>
-    struct array_append<array_constant<T,as...>,array_constant<T,bs...>> : array_constant<T,as...,bs...>{};
+    template<typename T, typename... TS, typename S, typename... SS>
+    struct array_append<array_constant<T,TS...>,array_constant<S,SS...>> : array_constant<T,TS...,S,SS...>{};
 
     template<typename A, typename B>
     using array_append_t = typename array_append<A,B>::type;
@@ -58,10 +53,10 @@ namespace ftl{
     * Convierte una lista de constantes en un array
     */
     template<typename T>
-    struct list_to_array_constant : array_append<array_constant<typename car_t<T>::value_type,car_t<T>::value>, typename list_to_array_constant<cdr_t<T>>::type>{};
+    struct list_to_array_constant : array_append<array_constant<car_t<T>>, typename list_to_array_constant<cdr_t<T>>::type>{};
 
     template<typename S>
-    struct list_to_array_constant<cons<S,null>> : array_constant<typename S::value_type,S::value>{};
+    struct list_to_array_constant<cons<S,null>> : array_constant<S>{};
 
     template<typename T>
     using list_to_array_constant_t = typename list_to_array_constant<T>::type;

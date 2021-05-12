@@ -27,10 +27,10 @@ int main(){
     using r1 = ftl::rational_constant<1,3>;
     using r2 = ftl::rational_constant<2,6>;
 
-    using l1 = ftl::permutations_t<ftl::zip_t<ftl::range_t<ftl::int_constant<4>>,ftl::range_t<ftl::int_constant<4>>>>;
+    using l1 = ftl::zip_t<ftl::range_t<ftl::int_constant<4>>,ftl::range_t<ftl::int_constant<4>>>;
     //print<l1>::type;
 
-    ftl::cons_print_e<l1>();
+    ftl::cons_print_e<ftl::unzip_t<l1>>();
 
     return 0;
 

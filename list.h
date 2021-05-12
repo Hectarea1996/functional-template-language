@@ -159,6 +159,10 @@ namespace ftl{
         using type = typename map_aux<some_null<TS...>::value,F,TS...>::type;
     };
 
+    template<template<typename...> typename F, typename... TS>
+    using map_t = typename map<F,TS...>::type;
+
+
     /**
     * Aplana una lista
     */
@@ -270,6 +274,16 @@ namespace ftl{
     template<typename T, typename S>
     using zip_t = typename zip<T,S>::type;
 
+    /**
+    * Descomprime una lista de pares en dos listas
+    */
+    template<typename T>
+    struct unzip : cons<map_t<car,T>,map_t<cdr,T>>{};
+
+    template<typename T>
+    using unzip_t = typename unzip<T>::type;
+
+
     //---- shortcuts ----
 
 
@@ -292,8 +306,6 @@ namespace ftl{
     template<typename T>
     using reverse_t = typename reverse<T>::type;
 
-    template<template<typename...> typename F, typename... TS>
-    using map_t = typename map<F,TS...>::type;
 
 
 
