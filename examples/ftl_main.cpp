@@ -27,12 +27,10 @@ int main(){
     using r1 = ftl::rational_constant<1,3>;
     using r2 = ftl::rational_constant<2,6>;
 
-    using l1 = ftl::build_list_t<ftl::int_constant<3>,build_simple>;
-    using flat1 = ftl::flatten_t<l1>;
-//    print<std::integral_constant<int,0>::value_type>::type;
-//    print<decltype(ftl::list_to_array_constant_t<flat1>::value)>::type;
+    using l1 = ftl::permutations_t<ftl::zip_t<ftl::range_t<ftl::int_constant<4>>,ftl::range_t<ftl::int_constant<4>>>>;
+    //print<l1>::type;
 
-    std::cout << ftl::array_length_v<ftl::list_to_array_constant_t<flat1>> << std::endl;
+    ftl::cons_print_e<l1>();
 
     return 0;
 

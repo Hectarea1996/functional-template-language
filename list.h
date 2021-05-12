@@ -5,6 +5,7 @@
 #include "null.h"
 #include "constant/numeric.h"
 #include "constant/equality.h"
+#include <iostream>
 
 namespace ftl{
 
@@ -18,6 +19,9 @@ namespace ftl{
 
     template<typename T, typename... TS>
     struct list<T,TS...> : cons<T,typename list<TS...>::type>{};
+
+    template<typename... TS>
+    using list_t = typename list<TS...>::type;
 
     /**
     * Construye una lista numerica. Dado un valor positivo, se generan
@@ -33,6 +37,30 @@ namespace ftl{
 
     template<typename N, template<typename> typename F>
     struct build_list : build_list_aux<eq_v<unsigned_long_long_int_constant<0>,N>,unsigned_long_long_int_constant<0>,N,F>{};
+
+    template<typename N, template <typename> typename F>
+    using build_list_t = typename build_list<N,F>::type;
+
+    /**
+    * Devuelve la lista de enteros entre el rango especificado
+    */
+    template<bool stop, typename N, typename S, typename P>
+    struct range_aux : cons<N,typename range_aux<greater_equal_v<plus_t<N,P>,S>,plus_t<N,P>,S,P>::type>{};
+
+    template<typename N, typename S, typename P>
+    struct range_aux<true,N,S,P> : null{};
+
+    template<typename S, typename... TS>
+    struct range : range_aux<greater_equal_v<unsigned_long_long_int_constant<0>,S>,unsigned_long_long_int_constant<0>,S,unsigned_long_long_int_constant<1>>{};
+
+    template<typename N, typename S>
+    struct range<N,S> : range_aux<greater_equal_v<N,S>,N,S,unsigned_long_long_int_constant<1>>{};
+
+    template<typename N, typename S, typename P>
+    struct range<N,S,P> : range_aux<greater_equal_v<N,S>,N,S,P>{};
+
+    template<typename N, typename... NS>
+    using range_t = typename range<N,NS...>::type;
 
     /**
     * Comprueba si un tipo es list
@@ -86,6 +114,9 @@ namespace ftl{
     struct append<null,T2>{
         using type = T2;
     };
+
+    template<typename T1, typename T2>
+    using append_t = typename append<T1,T2>::type;
 
     /**
     * Invierte el orden de los elementos de una lista
@@ -150,16 +181,100 @@ namespace ftl{
     * Devuelve una lista con todas las combinaciones posibles
     */
     template<typename T>
-    struct combine
+    struct permutations_map{
+        template<typename TS>
+        struct type_f : cons<T,TS>{} ;
+    };
 
+    template<typename T>
+    struct permutations;
+
+    template<typename T, typename TS>
+    struct permutations_first : map<permutations_map<T>::template type_f, typename permutations<TS>::type>{};
+
+    template<typename T>
+    struct permutations_first<T,null> : list<list_t<T>>{};
+
+    template<typename TH, typename T, typename TR>
+    struct permutations_aux : append<typename permutations_first<T,append_t<TH,TR>>::type, typename permutations_aux<cons_t<T,TH>,car_t<TR>,cdr_t<TR>>::type>{};
+
+    template<typename TH, typename T>
+    struct permutations_aux<TH,T,null> : permutations_first<T,TH>{};
+
+    template<typename T>
+    struct permutations : permutations_aux<null,car_t<T>,cdr_t<T>>{};
+
+    template<>
+    struct permutations<null> : null{};
+
+    template<typename T>
+    using permutations_t = typename permutations<T>::type;
+
+    /**
+    * Imprime una lista
+    */
+    template<typename T>
+    struct list_print_aux{
+        static void exe(){
+            std::cout << car_t<T>::value << " ";
+            list_print_aux<cdr_t<T>>::exe();
+        }
+    };
+
+    template<typename T, typename TS, typename RS>
+    struct list_print_aux<cons<cons<T,TS>,RS>>{
+        static void exe(){
+            std::cout << "( ";
+            list_print_aux<cons<T,TS>>::exe();
+            list_print_aux<RS>::exe();
+        }
+    };
+
+    template<typename RS>
+    struct list_print_aux<cons<null,RS>>{
+        static void exe(){
+            std::cout << "( ) ";
+            list_print_aux<RS>::exe();
+        }
+    };
+
+    template<>
+    struct list_print_aux<null>{
+        static void exe(){
+            std::cout << ") ";
+        }
+    };
+
+    template<typename T>
+    struct list_print{
+        static void exe(){
+            std::cout << "'( ";
+            list_print_aux<T>::exe();
+        }
+    };
+
+    template<typename T>
+    void list_print_e(){
+        list_print<T>::exe();
+    }
+
+    /**
+    * Comprime dos listas en una que contiene pares de elementos de cada lista
+    */
+    template<typename T, typename S>
+    struct zip : null{};
+
+    template<typename T, typename TS, typename S, typename SS>
+    struct zip<cons<T,TS>,cons<S,SS>> : cons<cons_t<T,S>,typename zip<TS,SS>::type>{};
+
+    template<typename T, typename S>
+    using zip_t = typename zip<T,S>::type;
 
     //---- shortcuts ----
 
-    template<typename... TS>
-    using list_t = typename list<TS...>::type;
 
-    template<typename N, template <typename> typename F>
-    using build_list_t = typename build_list<N,F>::type;
+
+
 
 
 
@@ -172,8 +287,7 @@ namespace ftl{
     template<typename T, std::size_t index>
     using list_ref_t = typename list_ref<T,index>::type;
 
-    template<typename T1, typename T2>
-    using append_t = typename append<T1,T2>::type;
+
 
     template<typename T>
     using reverse_t = typename reverse<T>::type;

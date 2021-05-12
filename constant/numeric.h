@@ -159,6 +159,30 @@ namespace ftl{
     template<typename N, typename M, typename... NS>
     struct lcm<N,M,NS...> : lcm<typename div<typename abs<typename mult<N,M>::type>::type,typename gcd<N,M>::type>::type,NS...>{};
 
+    /**
+    * Comprueba si un numero es mayor que otro
+    */
+    template<typename N, typename M>
+    struct greater : bool_constant<(N::value>M::value)>{};
+
+    template<typename N, typename M>
+    using greater_t = typename greater<N,M>::type;
+
+    template<typename N, typename M>
+    static constexpr bool greater_v = greater<N,M>::value;
+
+    /**
+    * Comprueba si un numero es mayor que otro
+    */
+    template<typename N, typename M>
+    struct greater_equal : bool_constant<(N::value>=M::value)>{};
+
+    template<typename N, typename M>
+    using greater_equal_t = typename greater_equal<N,M>::type;
+
+    template<typename N, typename M>
+    static constexpr bool greater_equal_v = greater_equal<N,M>::value;
+
     //---- shortcuts ----
 
     template<int n>
